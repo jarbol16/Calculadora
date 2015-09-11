@@ -9,8 +9,8 @@
 
 using namespace std;
 
-float sumar(int a, int b){
-	float result;
+int sumar(int a, int b){//luego hay que ponerlo como flotante
+	int result;
 	__asm {
 		mov eax,a // se mueve el valor de a al eax
 		add eax,b// e mueve el valor de b al eax y se suma
@@ -19,9 +19,56 @@ float sumar(int a, int b){
 	return result;
 }
 
+int resta(int a, int b) {
+	int result;
+	__asm {
+		mov eax, a
+		sub eax, b
+		mov result, eax
+	}
+	return result;
+}
+
+int multiplicacion(int a, int b) {
+	__asm {
+
+	}
+	return 0;
+}
+
+int division(int a, int b) {
+	__asm {
+
+	}
+	return 0;
+}
+
+float seno(float x) {
+	__asm {
+
+	}
+	return 0.0;
+}
+
+float coseno(float x) {
+	__asm {
+
+	}
+	return 0;
+}
+
+float tangente(float x) {
+	__asm {
+		
+	}
+	return 0;
+}
+	
+
+
 int main()
 {
-menu:int op,a, b;
+menu:int a, b,op;
 	cout << "|   CALCULADORA CIENTIFICA    |" << endl;
 	cout << "|-----------------------------|" << endl;
 	cout << "| OPERACIONES SOPORTADAS:     |" << endl;
@@ -47,18 +94,60 @@ menu:int op,a, b;
 		case 1:
 			cout << "|             SUMA            |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:       |" << endl;
+			cout << "| Digite primer numero:";
 			cin >> a;
-			cout << "| Digite segundo numero:      |" << endl;
+			cout << "| Digite segundo numero:";
 			cin >> b;
-			printf("| Respuesta = ",sumar(a, b)," |");
-			
+			cout << "| Respuesta = " << sumar(a, b)<<endl;
+			goto seguir;
 		case 2:
+			cout << "|            RESTA            |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Digite segundo numero:";
+			cin >> b;
+			cout << "| Respuesta = " << resta(a, b) << endl;
+			goto seguir;
 		case 3:
+			cout << "|       MULTIPLICACION        |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Digite segundo numero:";
+			cin >> b;
+			cout << "| Respuesta = " << multiplicacion(b, a) << endl;
+			goto seguir;
 		case 4:
+			cout << "|           DIVISION          |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Digite segundo numero:";
+			cin >> b;
+			cout << "| Respuesta = " << division(b, a) << endl;
+			goto seguir;
 		case 5:
+			cout << "|              SENO           |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Respuesta = " << seno(a) << endl;
+			goto seguir;
 		case 6:
+			cout << "|            COSENO           |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Respuesta = " << coseno(a) << endl;
+			goto seguir;
 		case 7:
+			cout << "|          TANGENTE           |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite primer numero:";
+			cin >> a;
+			cout << "| Respuesta = " << tangente(a) << endl;
+			goto seguir;
 		case 8:
 		case 9:
 		case 10:
@@ -70,12 +159,12 @@ menu:int op,a, b;
 	}
 
 seguir:op = 0;
-
-
-
-
-
-	
-    return 0;
+	cout << "|-----------------------------|" << endl;
+	cout << "|Desea continuar si(1) - No(0)|" << endl;
+	cin >> op;
+	if (op == 1){
+		goto menu;
+	}
+	return 0;
 }
 

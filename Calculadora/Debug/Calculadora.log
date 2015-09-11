@@ -1,11 +1,11 @@
-﻿Compilación iniciada a las 10/09/2015 01:09:24 p. m..
+﻿Compilación iniciada a las 10/09/2015 10:05:22 p. m..
      1>Proyecto "C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Calculadora\Calculadora.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Debug\Calculadora.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Calculadora.cpp
          Calculadora.cpp
-     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(54): warning C4474: "printf": se pasaron demasiados argumentos para la cadena de formato
-         c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(54): note: placeholders and their parameters expect 0 variadic arguments, but 2 were provided
-     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(24): warning C4102: 'menu': etiqueta sin referencia
+     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(135): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
+     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(142): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
+     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(149): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Debug\Calculadora.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Debug\Calculadora.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Debug\Calculadora.lib" /MACHINE:X86 Debug\Calculadora.obj
          Debug\stdafx.obj
@@ -14,4 +14,4 @@
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:07.54
+Tiempo transcurrido 00:00:07.03
