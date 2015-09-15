@@ -9,38 +9,67 @@
 
 using namespace std;
 
-int sumar(int a, int b){//luego hay que ponerlo como flotante
-	int result;
+float sumar(float a, float b){//luego hay que ponerlo como flotante
+	float result = 0.00;
 	__asm {
-		mov eax,a // se mueve el valor de a al eax
-		add eax,b// e mueve el valor de b al eax y se suma
-		mov result, eax // se guarda el resultado en la variable
+		FLD dword ptr[a] // guardo temporamente en el stack el valor flotante de a
+		FLD dword ptr[b]// guardo temporamente en el stack el valor flotante de b
+		FADD // sumo los ultimos dos valores guardados en el stack
+		FSTP dword ptr[result] // traigo el resulto y lo alamaceno en la variable
 	}
 	return result;
 }
 
-int resta(int a, int b) {
-	int result;
+float resta(float a, float b) {
+	float result;
 	__asm {
-		mov eax, a
-		sub eax, b
-		mov result, eax
+		FLD DWORD PTR[a] // guardo temporamente en el stack el valor flotante de a
+		FLD DWORD PTR[b] // guardo temporamente en el stack el valor flotante de b
+		FSUB // resto los ultimos dos valores guardados en el stack
+		FSTP DWORD PTR[result]// traigo el resulto y lo alamaceno en la variable
 	}
 	return result;
 }
 
-int multiplicacion(int a, int b) {
+float multiplicacion(float a, float b) {
+	float result;
 	__asm {
-
+		FLD DWORD PTR[a]
+		FLD DWORD PTR[b]
+		FMUL
+		FSTP DWORD PTR[result]
 	}
-	return 0;
+	return result;
 }
 
-int division(int a, int b) {
+float division(float a, float b) {
+	float cero = 0.0;
+	float result;
 	__asm {
-
+		FLD DWORD PTR[b]
+		FLD DWORD PTR[cero]
+		FCOMIP ST(0), ST(1)
+		JE divCero
+		FLD DWORD PTR[a]
+		FLD DWORD PTR[b]
+		FDIV
+		FSTP DWORD PTR[result]
 	}
-	return 0;
+	printf("Respuesta= : %.2f\n", result);
+	return 0.0;
+divCero:
+	cout << "|<     Division por cero     >|" << endl;
+	return 0.0;
+}
+
+float raiz(float x) {
+	float result;
+	__asm {
+		FLD DWORD PTR[x]
+		FSQRT
+		FSTP DWORD PTR[result]
+	}
+	return result;
 }
 
 float seno(float x) {
@@ -63,12 +92,15 @@ float tangente(float x) {
 	}
 	return 0;
 }
+
+
 	
 
 
 int main()
 {
-menu:int a, b,op;
+menu:int op;
+	float a, b;
 	cout << "|   CALCULADORA CIENTIFICA    |" << endl;
 	cout << "|-----------------------------|" << endl;
 	cout << "| OPERACIONES SOPORTADAS:     |" << endl;
@@ -125,30 +157,37 @@ menu:int a, b,op;
 			cin >> a;
 			cout << "| Digite segundo numero:";
 			cin >> b;
-			cout << "| Respuesta = " << division(b, a) << endl;
+			division(a,b);
 			goto seguir;
 		case 5:
 			cout << "|              SENO           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite  numero:";
 			cin >> a;
 			cout << "| Respuesta = " << seno(a) << endl;
 			goto seguir;
 		case 6:
 			cout << "|            COSENO           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite  numero:";
 			cin >> a;
 			cout << "| Respuesta = " << coseno(a) << endl;
 			goto seguir;
 		case 7:
 			cout << "|          TANGENTE           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite  numero:";
 			cin >> a;
 			cout << "| Respuesta = " << tangente(a) << endl;
 			goto seguir;
 		case 8:
+			cout << "|       RAIZ CUADRADA         |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero:";
+			cin >> a;
+			cout << "| Respuesta = " << raiz(a) << endl;
+			goto seguir;
+
 		case 9:
 		case 10:
 		case 11:
