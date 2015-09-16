@@ -63,13 +63,52 @@ divCero:
 }
 
 float raiz(float x) {
-	float result;
+	float result=-1.0;
+	float cero = 0.0;
 	__asm {
-		FLD DWORD PTR[x]
+		FLD DWORD PTR[cero];
+		FLD DWORD PTR[x];
+		FCOMIP ST(0), ST(1);
+		JA positivo;
+		JMP terminar;
+
+	positivo:
+		FLD DWORD PTR[x];
 		FSQRT
 		FSTP DWORD PTR[result]
+		JMP terminar;
+		
 	}
+ 
+terminar:
 	return result;
+}
+
+//No me esta funcionando para elevarlo a flotante
+float exponente(float x,float e){
+	float acum;
+	float cont = 1;
+	__asm {
+		FLD DWORD PTR[x]//Leo el coeficiente
+		FSTP DWORD PTR[acum]//guardo en acum el valor de x
+	ciclo:
+		FLD DWORD PTR[x]
+		FLD DWORD PTR[acum]
+		FMUL
+		FSTP DWORD PTR[acum]
+		FLD1
+		FLD DWORD PTR[cont]
+		FADD
+		FSTP DWORD PTR[cont]
+		FLD DWORD PTR[e]
+		FLD DWORD PTR[cont]
+		FCOMIP ST(0),ST(1)
+		JE terminar
+		JMP ciclo
+	}
+
+terminar:
+	return acum;
 }
 
 float seno(float x) {
@@ -185,10 +224,23 @@ menu:int op;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| Respuesta = " << raiz(a) << endl;
+			b = raiz(a);
+			if (b < 0) {
+				cout << "|<No soporta imaginarios>|" << endl;
+			}else { 
+				cout << "Respuesta =" << b  << endl;
+			}
 			goto seguir;
 
 		case 9:
+			cout << "|          EXPONENTE          |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite coeficiente:";
+			cin >> a;
+			cout << "| Digite exponente:";
+			cin >> b;
+			cout << "| Respuesta =" << exponente(a, b) << endl;
+			goto seguir;
 		case 10:
 		case 11:
 		case 12:
