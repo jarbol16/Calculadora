@@ -1,11 +1,12 @@
-﻿Compilación iniciada a las 17/09/2015 10:57:41 a. m..
+﻿Compilación iniciada a las 17/09/2015 11:43:29 a. m..
      1>Proyecto "C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Calculadora\Calculadora.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Debug\Calculadora.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Calculadora.cpp
          Calculadora.cpp
      1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(4): error C2859: C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Calculadora\Debug\vc140.idb no es el archivo idb que se utilizó al crear este encabezado precompilado; vuelva a crear el encabezado precompilado.
+     1>c:\users\jdaniels\documents\visual studio 2015\projects\calculadora\calculadora\calculadora.cpp(307): error C3861: 'exponente': no se encontró el identificador
      1>Compilación del proyecto terminada "C:\Users\JDaniels\Documents\Visual Studio 2015\Projects\Calculadora\Calculadora\Calculadora.vcxproj" (Build destinos) -- ERROR.
 
 ERROR al compilar.
 
-Tiempo transcurrido 00:00:01.62
+Tiempo transcurrido 00:00:01.14

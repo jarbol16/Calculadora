@@ -122,7 +122,7 @@ float exponente(float x,float e){
 terminar:
 	return acum;
 }
-/*
+
 float factorial(float a) {
 	float cont = 1.000000;
 	float cero = 0.0;
@@ -149,7 +149,7 @@ float factorial(float a) {
 terminar:
 	cout << cont;
 	return result;
-}*/
+}
 
 int factEntero(int X) {
 	int cero = 0, uno = 1, nega = -1;
