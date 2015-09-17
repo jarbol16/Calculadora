@@ -218,10 +218,10 @@ menu:int op;
 	cout << "|>TANGENTE                 7  |" << endl;
 	cout << "|>RAIZ CUADRADA            8  |" << endl;
 	cout << "|>EXPONENTE                9  |" << endl;
-	cout << "|>LOG BASE 2              10  |" << endl;
-	cout << "|>LOG BASE 10             11  |" << endl;
-	cout << "|>e^x                     12  |" << endl;
-	cout << "|>FACTORIAL               13  |" << endl;
+	cout << "|>FACTORIAL               10  |" << endl;
+	cout << "|>LOG BASE 2              11  |" << endl;
+	cout << "|>LOG BASE 10             12  |" << endl;
+	cout << "|>e^x                     13  |" << endl;
 	cout << "|DIGITE OPCION:               |" << endl;
 	cout << "|_____________________________|" << endl;
 	cin >> op;
@@ -307,12 +307,9 @@ menu:int op;
 			cout << "| Respuesta =" << exponente(a, b) << endl;
 			goto seguir;
 		case 10:
-		case 11:
-		case 12:
-		case 13:
-			int fac;
 			cout << "|         FACTORIAL           |" << endl;
 			cout << "|-----------------------------|" << endl;
+			int fac;
 			cout << "| Digite  numero:" << endl;
 			cin >> fac;
 			if (fac < 0) {
