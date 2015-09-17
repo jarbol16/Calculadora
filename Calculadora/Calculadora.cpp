@@ -122,7 +122,60 @@ float exponente(float x,float e){
 terminar:
 	return acum;
 }
+/*
+float factorial(float a) {
+	float cont = 1.000000;
+	float cero = 0.0;
+	float result = 1;
+	__asm {
+		FlD DWORD PTR[cero]
+		FLD DWORD PTR[a]
+		FCOMIP ST(0),ST(1)
+		JE terminar
+		JMP fact
 
+	fact:
+		FlD DWORD PTR(result)
+		FLD DWORD PTR(cont)
+		FMUL
+		FSTP DWORD PTR(result)
+		INC DWORD PTR(cont)
+		FLD DWORD PTR(a)
+		FLD DWORD PTR(cont)
+		FCOMIP ST(0),ST(1)
+		JE terminar
+		JMP fact
+	}
+terminar:
+	cout << cont;
+	return result;
+}*/
+
+int factEntero(int X) {
+	int cero = 0, uno = 1, nega = -1;
+	int result = 1;
+
+	__asm{
+		MOV EAX, X;
+		CMP EAX, cero;
+		JE igual; //SI X=0 VAYA
+
+  ciclo: 
+		INC ECX; //INCREMETO I
+		MOV EAX, result; // CARGAR RESULTADO
+		MUL ECX; //MULTIPLICAR POR EL ITERADOR
+		MOV result, EAX; //RES = RES*I
+		CMP ECX, X; // ECX == X
+		JE terminar;
+		JMP ciclo;
+
+  igual: MOV EAX, uno;
+		MOV result, EAX;
+		JMP terminar;
+  }
+terminar:
+	return result;
+}
 float seno(float x) {
 	__asm {
 
@@ -257,6 +310,18 @@ menu:int op;
 		case 11:
 		case 12:
 		case 13:
+			int fac;
+			cout << "|         FACTORIAL           |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero:" << endl;
+			cin >> fac;
+			if (fac < 0) {
+				fac = fac*-1;
+				cout << "| Respuesta = -" << factEntero(fac) << endl;
+			}else {
+				cout << "| Respuesta = " << factEntero(fac) << endl;
+			}
+			goto seguir;
 		default:
 			break;
 	}
