@@ -84,14 +84,30 @@ terminar:
 	return result;
 }
 
-//No me esta funcionando para elevarlo a flotante
+
 float exponente(float x,float e){
-	float acum;
+	float acum ;
 	float cont = 1;
+	float cero = 0.0;
+	float Nuno = 1;
 	__asm {
+		FLD DWORD PTR[cero]
+		FLD DWORD PTR[e]
+		FCOMIP ST(0),ST(1)
+		JE uno
+		JMP inicio
+	uno:
+		FLD DWORD PTR[Nuno]//Leo el coeficiente
+		FSTP DWORD PTR[acum]//guardo en acum el valor de x
+		JMP terminar
+	inicio:
 		FLD DWORD PTR[x]//Leo el coeficiente
 		FSTP DWORD PTR[acum]//guardo en acum el valor de x
 	ciclo:
+		FLD DWORD PTR[e]
+		FLD DWORD PTR[cont]
+		FCOMIP ST(0), ST(1)
+		JE terminar
 		FLD DWORD PTR[x]
 		FLD DWORD PTR[acum]
 		FMUL
@@ -100,10 +116,6 @@ float exponente(float x,float e){
 		FLD DWORD PTR[cont]
 		FADD
 		FSTP DWORD PTR[cont]
-		FLD DWORD PTR[e]
-		FLD DWORD PTR[cont]
-		FCOMIP ST(0),ST(1)
-		JE terminar
 		JMP ciclo
 	}
 
