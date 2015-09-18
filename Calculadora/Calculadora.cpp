@@ -83,6 +83,46 @@ float raiz(float x) {
 terminar:
 	return result;
 }
+/*
+Mtodo de la raiz por medio de iteraciones
+*/
+float raiz_metodo(float x) {
+	float result =0.0;
+	float cero = 0.0;
+	float tmpo = 0.0;
+	float d = 2.0; 
+	__asm {
+		FLD DWORD PTR[cero];
+		FLD DWORD PTR[x];
+		FCOMIP ST(0), ST(1);
+		fstp ST(0) // limpio el stack
+		JA inicio
+		JMP terminar;
+
+	inicio:
+		FLD DWORD PTR[x]
+		FSTP DWORD PTR[result]
+		JMP ciclo
+
+	ciclo:
+		FLD DWORD PTR[result];
+		FLD DWORD PTR[tmpo];
+		FCOMIP ST(0), ST(1);
+		FSTP ST(0) //LIMPIO
+		JE terminar;
+		FLD DWORD PTR[result];
+		FSTP DWORD PTR[tmpo]; //TMPO = RES
+		FLD DWORD PTR[x]; //METO RES EN EL STACK
+		FDIV DWORD PTR[result]; //   BASE/RES
+		FADD DWORD PTR[result]; // BASE/RES + RES
+		FDIV DWORD PTR[d]; // (BASE/RES + RES)/2
+		FSTP DWORD PTR[result]; //RES = (BASE/RES + RES)/2
+		JMP ciclo;
+	}
+
+terminar:
+	return result;
+}
 
 
 float exponente(float x,float e){
@@ -183,16 +223,35 @@ float seno(float x) {
 	return 0.0;
 }
 
-float coseno(float x) {
+float coseno_metodo(float x) {
 	__asm {
 
 	}
 	return 0;
 }
-
-float tangente(float x) {
+float coseno_intel(float x) {
+	float result = 0.0;
 	__asm {
-		
+		FLD DWORD PTR[x]
+		FCOS
+		FSTP DWORD PTR[result];
+	}
+	return result;
+}
+
+float tangente_intel(float x) {
+	float result = 0.0;
+	__asm {
+		FLD DWORD PTR[x]
+		FPTAN
+		FSTP ST(0)
+		FSTP DWORD PTR[result]
+	}
+	return result;
+}
+float tangente_metodo(float x) {
+	__asm {
+
 	}
 	return 0;
 }
@@ -268,21 +327,23 @@ menu:int op;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| Respuesta = " << seno(a) << endl;
+			cout << "| [FP] Respuesta = " << seno(a) << endl;
 			goto seguir;
 		case 6:
 			cout << "|            COSENO           |" << endl;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| Respuesta = " << coseno(a) << endl;
+			cout << "| [FP] Respuesta = " << coseno_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << coseno_metodo(a) << endl;
 			goto seguir;
 		case 7:
 			cout << "|          TANGENTE           |" << endl;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| Respuesta = " << tangente(a) << endl;
+			cout << "| [FP] Respuesta = " << tangente_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << tangente_metodo(a) << endl;
 			goto seguir;
 		case 8:
 			cout << "|       RAIZ CUADRADA         |" << endl;
@@ -293,7 +354,8 @@ menu:int op;
 			if (b < 0) {
 				cout << "|<No soporta imaginarios>|" << endl;
 			}else { 
-				cout << "Respuesta =" << b  << endl;
+				cout << "[FP] Respuesta =" << b  << endl;
+				cout << "[ME] Respuesta =" << raiz_metodo(a) << endl;
 			}
 			goto seguir;
 
