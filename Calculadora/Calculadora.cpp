@@ -87,7 +87,7 @@ terminar:
 
 float exponente(float x,float e){
 	float acum ;
-	float cont = 1;
+	float cont = 1.000000;
 	float cero = 0.0;
 	float Nuno = 1;
 	__asm {
