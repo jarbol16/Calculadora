@@ -124,16 +124,17 @@ terminar:
 	return result;
 }
 
-
+/*
 float exponente(float x,float e){
 	float acum ;
-	float cont = 1.000000;
+	float cont = 1;
 	float cero = 0.0;
 	float Nuno = 1;
 	__asm {
 		FLD DWORD PTR[cero]
 		FLD DWORD PTR[e]
 		FCOMIP ST(0),ST(1)
+		FSTP ST(0)
 		JE uno
 		JMP inicio
 	uno:
@@ -147,6 +148,7 @@ float exponente(float x,float e){
 		FLD DWORD PTR[e]
 		FLD DWORD PTR[cont]
 		FCOMIP ST(0), ST(1)
+		FSTP ST(0)
 		JE terminar
 		FLD DWORD PTR[x]
 		FLD DWORD PTR[acum]
@@ -161,6 +163,24 @@ float exponente(float x,float e){
 
 terminar:
 	return acum;
+}*/
+float exponente_flotante(float a, float b) {
+	float result;
+	__asm {
+		FLD DWORD PTR[b]//leo LA POTENCIA
+		FLD DWORD PTR[a]//leo la base
+		FYL2X
+		FLD ST
+		FRNDINT//redondeo a entero
+		FSUB ST(1),ST //se resta el valor de st(1) a st para obtener parte decimal
+		FXCH ST(1)//intercambio el valor del stack cero por el stack 1
+		F2XM1//calcula valor de 2^x-1
+		FLD1//cargo valor de 1
+		FADD//sumo el 1 para que quede 2^x
+		FSCALE
+		FSTP DWORD PTR[result]
+	}
+	return result;
 }
 
 float factorial(float a) {
@@ -255,9 +275,49 @@ float tangente_metodo(float x) {
 	}
 	return 0;
 }
+/*
+logaritmo base 10 con la implemtacion brindada por el 
+procesador
 
+*/
+float log10_intel(float x) {
+	float result;
+	__asm {
+		FLDLG2 //LOGARIT
+		FLD DWORD PTR[x]
+		FYl2X //parametro del procesador para calcular log10
+		FSTP DWORD PTR[result]//Guardo el resultado en resultado
+	}
+	return result;
+}
+float log10_metodo(float x) {
+	float result;
+	__asm {
 
-	
+	}
+	return 0.0;
+
+}
+
+float log2_intel(float x) {
+	float result;
+	float uno = 1;
+	__asm {
+		FLD DWORD PTR[uno]
+		FLD DWORD PTR[x]
+		FYL2X
+		FSTP DWORD PTR[result]
+	}
+	return result;
+}
+float log2_metodo(float x) {
+	float result;
+	__asm {
+
+	}
+	return 0.0;
+
+}
 
 
 int main()
@@ -366,7 +426,7 @@ menu:int op;
 			cin >> a;
 			cout << "| Digite exponente:";
 			cin >> b;
-			cout << "| Respuesta =" << exponente(a, b) << endl;
+			cout << "| Respuesta =" << exponente_flotante(a, b) << endl;
 			goto seguir;
 		case 10:
 			cout << "|         FACTORIAL           |" << endl;
@@ -380,6 +440,14 @@ menu:int op;
 			}else {
 				cout << "| Respuesta = " << factEntero(fac) << endl;
 			}
+			goto seguir;
+		case 12:
+			cout << "|        LOG BASE 10          |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero:";
+			cin >> a;
+			cout << "| [FP] Respuesta = " << log10_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << log10_metodo(a) << endl;
 			goto seguir;
 		default:
 			break;
