@@ -1,15 +1,18 @@
-﻿Build started 21/09/2015 10:31:21 p. m..
-     1>Project "C:\Users\Santi\Desktop\Calculadora\Calculadora\Calculadora.vcxproj" on node 2 (Build target(s)).
+﻿Compilación iniciada a las 22/09/2015 10:35:03 a. m..
+     1>Proyecto "C:\Users\Teo\Documents\Calculadora\Calculadora\Calculadora.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Debug\Calculadora.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Calculadora.cpp
          Calculadora.cpp
-     1>c:\users\santi\desktop\calculadora\calculadora\calculadora.cpp(352): warning C4102: 'xn': unreferenced label
+     1>c:\users\teo\documents\calculadora\calculadora\calculadora.cpp(223): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
+     1>c:\users\teo\documents\calculadora\calculadora\calculadora.cpp(231): warning C4405: 'mul': el identificador es una palabra reservada
+     1>c:\users\teo\documents\calculadora\calculadora\calculadora.cpp(232): warning C4405: 'mul': el identificador es una palabra reservada
+     1>c:\users\teo\documents\calculadora\calculadora\calculadora.cpp(430): warning C4102: 'xn': etiqueta sin referencia
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Santi\Desktop\Calculadora\Debug\Calculadora.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Santi\Desktop\Calculadora\Debug\Calculadora.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Santi\Desktop\Calculadora\Debug\Calculadora.lib" /MACHINE:X86 Debug\Calculadora.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Teo\Documents\Calculadora\Debug\Calculadora.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Teo\Documents\Calculadora\Debug\Calculadora.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Teo\Documents\Calculadora\Debug\Calculadora.lib" /MACHINE:X86 Debug\Calculadora.obj
          Debug\stdafx.obj
-         Calculadora.vcxproj -> C:\Users\Santi\Desktop\Calculadora\Debug\Calculadora.exe
-     1>Done Building Project "C:\Users\Santi\Desktop\Calculadora\Calculadora\Calculadora.vcxproj" (Build target(s)).
+         Calculadora.vcxproj -> C:\Users\Teo\Documents\Calculadora\Debug\Calculadora.exe
+     1>Compilación del proyecto terminada "C:\Users\Teo\Documents\Calculadora\Calculadora\Calculadora.vcxproj" (Build destinos).
 
-Build succeeded.
+Compilación correcta.
 
-Time Elapsed 00:00:00.66
+Tiempo transcurrido 00:00:01.44

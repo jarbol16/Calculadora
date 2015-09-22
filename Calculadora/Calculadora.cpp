@@ -225,7 +225,7 @@ float gradosARadianes(float n) {
 	float mul;
 	float result;
 	__asm {
-		FLD DWORD PTR[n]
+			FLD DWORD PTR[n]
 			FLD DWORD PTR[pi]
 			FMUL
 			FSTP DWORD PTR[mul]
@@ -239,10 +239,68 @@ float gradosARadianes(float n) {
 
 float seno(float x) {
 	float n = gradosARadianes(x);
+	float dos = 2.f;
+	int niter = 5;
+	float exp = 3.f;
+	float menosuno = -1.f;
+	float res = 0.0;
+	float xn = 0.f;
+	float iterador = 0.f;
+	float nf;
+	float p;
+	float signo = menosuno;
+
 	__asm {
 
+	ciclo:
+			INC iterador
+			MOV eax, DWORD PTR[exp] //El
+			PUSH eax //Exponente
+			MOV eax, DWORD PTR[n] //La
+			PUSH eax //Base
+			CALL powf //Llamo la funcion
+			POP ebx
+			POP ebx
+			FSTP DWORD PTR[xn] //Guardo el x^n
+			MOV eax, DWORD PTR[exp]
+			PUSH eax // el exp
+			CALL factorial //hago exp!
+			POP ebx
+			FSTP DWORD PTR[nf] // guardo el n!
+			FLD DWORD PTR[xn]
+			FLD DWORD PTR[nf]
+			FDIV
+			FSTP DWORD PTR[p]
+
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[p]
+			FMUL
+			FSTP DWORD PTR[p] // signo de la fracción
+			FLD dword ptr[res] 
+			FLD dword ptr[p]
+			FADD 
+			FSTP dword ptr[res]// resultado parcial
+			FLD dword ptr[exp]
+			FLD dword ptr[dos]
+			FADD
+			FSTP dword ptr[exp]
+				FLD DWORD PTR[signo]
+				FLD DWORD PTR[menosuno]
+				FMUL
+				FSTP DWORD PTR[signo] // signo de la fracción
+			MOV EAX, iterador
+			CMP EAX, niter
+			JE fin
+			JMP ciclo
+
+		fin:
+			FLD DWORD PTR[n]
+			FLD DWORD PTR[res] 
+			FADD 
+			FSTP DWORD PTR[res]	
 	}
-	return 0.0;
+
+	return res;
 }
 
 float coseno_metodo(float x) {
