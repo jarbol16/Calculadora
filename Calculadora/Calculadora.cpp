@@ -218,7 +218,27 @@ int factEntero(int X) {
 terminar:
 	return result;
 }
+
+float gradosARadianes(float n) {
+	float pi = 3.14159265359;
+	float a = 180.0;
+	float mul;
+	float result;
+	__asm {
+		FLD DWORD PTR[n]
+			FLD DWORD PTR[pi]
+			FMUL
+			FSTP DWORD PTR[mul]
+			FLD DWORD PTR[mul]
+			FLD DWORD PTR[a]
+			FDIV
+			FSTP DWORD PTR[result]
+	}
+	return result;
+}
+
 float seno(float x) {
+	float n = gradosARadianes(x);
 	__asm {
 
 	}
