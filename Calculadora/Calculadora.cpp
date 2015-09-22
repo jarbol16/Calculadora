@@ -164,11 +164,11 @@ float exponente(float x,float e){
 terminar:
 	return acum;
 }*/
-float exponente_flotante(float a, float b) {
+float exponente_flotante(float base, float exp) {
 	float result;
 	__asm {
-		FLD DWORD PTR[b]//leo LA POTENCIA
-		FLD DWORD PTR[a]//leo la base
+		FLD DWORD PTR[exp]//leo LA POTENCIA
+		FLD DWORD PTR[base]//leo la base
 		FYL2X
 		FLD ST
 		FRNDINT//redondeo a entero
@@ -183,32 +183,14 @@ float exponente_flotante(float a, float b) {
 	return result;
 }
 
-float factorial(float a) {
-	float cont = 1.000000;
-	float cero = 0.0;
-	float result = 1;
-	__asm {
-		FlD DWORD PTR[cero]
-		FLD DWORD PTR[a]
-		FCOMIP ST(0),ST(1)
-		JE terminar
-		JMP fact
-
-	fact:
-		FlD DWORD PTR(result)
-		FLD DWORD PTR(cont)
-		FMUL
-		FSTP DWORD PTR(result)
-		INC DWORD PTR(cont)
-		FLD DWORD PTR(a)
-		FLD DWORD PTR(cont)
-		FCOMIP ST(0),ST(1)
-		JE terminar
-		JMP fact
+float factorial(float n){
+	n = abs(roundf(n));
+	float f = 1.f;
+	if (n==0.f || n==1.f) return 1.0f;
+	for (float i = 1.f; i <= n; i = i + 1.f) {
+		f = f*i;
 	}
-terminar:
-	cout << cont;
-	return result;
+	return f;
 }
 
 int factEntero(int X) {
@@ -291,7 +273,7 @@ float log10_intel(float x) {
 	return result;
 }
 float log10_metodo(float x) {
-	float result;
+	//float result;
 	__asm {
 
 	}
@@ -311,7 +293,7 @@ float log2_intel(float x) {
 	return result;
 }
 float log2_metodo(float x) {
-	float result;
+	//float result;
 	__asm {
 
 	}
@@ -319,6 +301,86 @@ float log2_metodo(float x) {
 
 }
 
+float series_ln(float x) {
+	float result = 0;
+	float uno = 1.f;
+	float mUno = -1.f;
+	float n = 1.f;
+	/*__asm {
+	FLD DWORD PTR[uno] //s(1)
+	FLD DWORD PTR[x] //s(0)
+	FSUB st(0),st(1)
+	FSTP DWORD PTR[result]
+	FLD DWORD PTR[mUno] //Cargo el -1
+	FSTP DWORD PTR[result]
+	}*/
+	__asm{
+			MOV  eax, DWORD PTR[n] //Poner el primer argumentos en eax Exponente
+			PUSH eax //Almacenarlo en pila
+			MOV  eax, DWORD PTR[mUno] //Poner el segundo argumentos en eax Base
+			PUSH eax //Almacenarlo en pila
+			CALL powf //Llamo la funcion
+			POP  ebx //Saco argumento // mov DWORD PTR[result1],ebx
+			POP  ebx //Saco argumento // mov DWORD PTR[result2],ebx
+			FSTP DWORD PTR[result] //Guardo el (-1)^n
+			FLD DWORD PTR[result] //Cargo el (-1)^n
+			FLD DWORD PTR[mUno] //Cargo el -1
+			FMUL //Multiplico
+			FSTP DWORD PTR[result] //Guardo (-1)^(n+1)
+	}
+	cout << "Result: " << result << endl;
+	return result;
+}
+void paso() {
+	cout << "PASO" << endl;
+}
+float series_e(float x) {
+	float result = 0.f;
+	float n = 5.f; //Ver hasta cuanto puede aumentar
+	float uno = 1.0f;
+	float cero = 0.0f;
+	float tmpxn = 0.f;
+	float tmpnf = 0.f;
+	float tmpres = 0.f;
+	__asm {
+	ciclo:
+		FLD DWORD PTR[n] //Cargo n
+		FLD DWORD PTR[uno] //Cargo 1
+		FSUB //n-1
+		CALL paso
+		FSTP DWORD PTR[n] //n=n-1
+			xn:
+			MOV eax, DWORD PTR[n] //El
+			PUSH eax //Exponente
+			MOV eax, DWORD PTR[x] //La
+			PUSH eax //Base
+			CALL powf //Llamo la funcion
+			POP ebx
+			POP ebx
+			FSTP DWORD PTR[tmpxn] //Guardo el x^n
+			MOV eax, DWORD PTR[n]
+			PUSH eax // el n
+			CALL factorial //hago n!
+			POP ebx
+			FSTP DWORD PTR[tmpnf] // guardo el n!
+			FLD DWORD PTR[tmpxn] //cargo x^n
+			FLD DWORD PTR[tmpnf] // cargo el n!
+			FDIV
+			FSTP DWORD PTR[tmpres]
+			FLD DWORD PTR[result]
+			FLD DWORD PTR[tmpres]
+			FADD
+			FSTP DWORD PTR[result]
+		FLD DWORD PTR[n] //cargo n
+		FLD DWORD PTR[cero] //cargo cero
+		FCOMIP ST(0), ST(1); //comparo n y cero
+		JE fin //si es 0, chao
+		JMP ciclo // si no siga
+	fin:
+		
+	}
+	return result;
+}
 
 int main()
 {
@@ -448,6 +510,17 @@ menu:int op;
 			cin >> a;
 			cout << "| [FP] Respuesta = " << log10_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << log10_metodo(a) << endl;
+			goto seguir;
+		case 13:
+			cout << "|            e^x              |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero: ";
+			float y; cin >> y;
+			cout << "| Respuesta = " << series_e(y) << endl;
+			goto seguir;
+		case 20:
+			float x;
+			cout << "ln() of: "; cin >> x; cout << endl << series_ln(x) << endl;
 			goto seguir;
 		default:
 			break;
