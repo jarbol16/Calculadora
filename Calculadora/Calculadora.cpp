@@ -237,10 +237,21 @@ float gradosARadianes(float n) {
 	return result;
 }
 
-float seno(float x) {
+float seno_intel(float x) {
+	x = gradosARadianes(x);
+	float result = 0.0;
+	__asm {
+		FLD DWORD PTR[x]
+			FSIN
+			FSTP DWORD PTR[result];
+	}
+	return result;
+}
+
+float seno_metodo(float x) {
 	float n = gradosARadianes(x);
 	float dos = 2.f;
-	int niter = 5;
+	int niter = 10;
 	float exp = 3.f;
 	float menosuno = -1.f;
 	float res = 0.0;
@@ -284,10 +295,10 @@ float seno(float x) {
 			FLD dword ptr[dos]
 			FADD
 			FSTP dword ptr[exp]
-				FLD DWORD PTR[signo]
-				FLD DWORD PTR[menosuno]
-				FMUL
-				FSTP DWORD PTR[signo] // signo de la fracción
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[menosuno]
+			FMUL
+			FSTP DWORD PTR[signo] // signo de la fracción
 			MOV EAX, iterador
 			CMP EAX, niter
 			JE fin
@@ -304,12 +315,73 @@ float seno(float x) {
 }
 
 float coseno_metodo(float x) {
+	float n = gradosARadianes(x);
+	float dos = 2.f;
+	int niter = 10;
+	float exp = 2.f;
+	float menosuno = -1.f;
+	float res = 0.0;
+	float xn = 0.f;
+	float iterador = 0.f;
+	float nf;
+	float p;
+	float signo = menosuno;
+	float uno = 1.f;
+
 	__asm {
 
+	ciclo:
+		INC iterador
+			MOV eax, DWORD PTR[exp] //El
+			PUSH eax //Exponente
+			MOV eax, DWORD PTR[n] //La
+			PUSH eax //Base
+			CALL powf //Llamo la funcion
+			POP ebx
+			POP ebx
+			FSTP DWORD PTR[xn] //Guardo el x^n
+			MOV eax, DWORD PTR[exp]
+			PUSH eax // el exp
+			CALL factorial //hago exp!
+			POP ebx
+			FSTP DWORD PTR[nf] // guardo el n!
+			FLD DWORD PTR[xn]
+			FLD DWORD PTR[nf]
+			FDIV
+			FSTP DWORD PTR[p]
+
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[p]
+			FMUL
+			FSTP DWORD PTR[p] // signo de la fracción
+			FLD dword ptr[res]
+			FLD dword ptr[p]
+			FADD
+			FSTP dword ptr[res]// resultado parcial
+			FLD dword ptr[exp]
+			FLD dword ptr[dos]
+			FADD
+			FSTP dword ptr[exp]
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[menosuno]
+			FMUL
+			FSTP DWORD PTR[signo] // signo de la fracción
+			MOV EAX, iterador
+			CMP EAX, niter
+			JE fin
+			JMP ciclo
+
+		fin :
+			FLD DWORD PTR[uno]
+			FLD DWORD PTR[res]
+			FADD
+			FSTP DWORD PTR[res]
 	}
-	return 0;
+
+	return res;
 }
 float coseno_intel(float x) {
+	x = gradosARadianes(x);
 	float result = 0.0;
 	__asm {
 		FLD DWORD PTR[x]
@@ -320,6 +392,7 @@ float coseno_intel(float x) {
 }
 
 float tangente_intel(float x) {
+	x = gradosARadianes(x);
 	float result = 0.0;
 	__asm {
 		FLD DWORD PTR[x]
@@ -527,7 +600,8 @@ menu:int op;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| [FP] Respuesta = " << seno(a) << endl;
+			cout << "| [FP] Respuesta = " << seno_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << seno_metodo(a) << endl;
 			goto seguir;
 		case 6:
 			cout << "|            COSENO           |" << endl;
