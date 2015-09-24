@@ -314,7 +314,7 @@ float series_ln(float x) {
 	FLD DWORD PTR[mUno] //Cargo el -1
 	FSTP DWORD PTR[result]
 	}*/
-	__asm{
+	/*__asm{
 			MOV  eax, DWORD PTR[n] //Poner el primer argumentos en eax Exponente
 			PUSH eax //Almacenarlo en pila
 			MOV  eax, DWORD PTR[mUno] //Poner el segundo argumentos en eax Base
@@ -327,7 +327,7 @@ float series_ln(float x) {
 			FLD DWORD PTR[mUno] //Cargo el -1
 			FMUL //Multiplico
 			FSTP DWORD PTR[result] //Guardo (-1)^(n+1)
-	}
+	}*/
 	cout << "Result: " << result << endl;
 	return result;
 }
