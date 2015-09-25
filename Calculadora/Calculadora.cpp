@@ -6,7 +6,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "iostream"
-
 using namespace std;
 void paso() {
 	cout << "PASO" << endl;
@@ -57,8 +56,8 @@ float division(float a, float b) {
 		FDIV
 		FSTP DWORD PTR[result]
 	}
-	printf("Respuesta= : %.2f\n", result);
-	return 0.0;
+	printf("| Respuesta= : %.2f\n", result);
+	return result;
 divCero:
 	cout << "|<     Division por cero     >|" << endl;
 	return 0.0;
@@ -73,13 +72,11 @@ float raiz(float x) {
 		FCOMIP ST(0), ST(1);
 		JA positivo;
 		JMP terminar;
-
 	positivo:
 		FLD DWORD PTR[x];
 		FSQRT
 		FSTP DWORD PTR[result]
 		JMP terminar;
-		
 	}
  
 terminar:
@@ -125,47 +122,6 @@ float raiz_metodo(float x) {
 terminar:
 	return result;
 }
-
-/*
-float exponente(float x,float e){
-	float acum ;
-	float cont = 1;
-	float cero = 0.0;
-	float Nuno = 1;
-	__asm {
-		FLD DWORD PTR[cero]
-		FLD DWORD PTR[e]
-		FCOMIP ST(0),ST(1)
-		FSTP ST(0)
-		JE uno
-		JMP inicio
-	uno:
-		FLD DWORD PTR[Nuno]//Leo el coeficiente
-		FSTP DWORD PTR[acum]//guardo en acum el valor de x
-		JMP terminar
-	inicio:
-		FLD DWORD PTR[x]//Leo el coeficiente
-		FSTP DWORD PTR[acum]//guardo en acum el valor de x
-	ciclo:
-		FLD DWORD PTR[e]
-		FLD DWORD PTR[cont]
-		FCOMIP ST(0), ST(1)
-		FSTP ST(0)
-		JE terminar
-		FLD DWORD PTR[x]
-		FLD DWORD PTR[acum]
-		FMUL
-		FSTP DWORD PTR[acum]
-		FLD1
-		FLD DWORD PTR[cont]
-		FADD
-		FSTP DWORD PTR[cont]
-		JMP ciclo
-	}
-
-terminar:
-	return acum;
-}*/
 float exponente_flotante(float base, float exp) {
 	float result;
 	__asm {
@@ -222,16 +178,18 @@ terminar:
 }
 
 float gradosARadianes(float n) {
-	float pi = 3.14159265359;
-	float a = 180.0;
-	float mul;
+	n = fmod(n, 360.0f); //Convierto a angulo de -360° a +360°
+	if (n < 0) n += 360.f; //Convierto a angulos positivos
+	float pi = 3.14159265358979323846f;
+	float a = 180.0f;
+	float mult;
 	float result;
 	__asm {
 			FLD DWORD PTR[n]
 			FLD DWORD PTR[pi]
 			FMUL
-			FSTP DWORD PTR[mul]
-			FLD DWORD PTR[mul]
+			FSTP DWORD PTR[mult]
+			FLD DWORD PTR[mult]
 			FLD DWORD PTR[a]
 			FDIV
 			FSTP DWORD PTR[result]
@@ -394,6 +352,12 @@ float coseno_intel(float x) {
 }
 
 float tangente_intel(float x) {
+	x = fmod(x, 360.0f); //Convierto a angulo de -360° a +360°
+	if (x < 0) x += 360.f; //Convierto a angulos positivos
+	if (x == 90.f || x == 270.0f) {
+		cout << "ALERT: Not A Number" << endl;
+		return log(-1.f);
+	}
 	x = gradosARadianes(x);
 	float result = 0.0;
 	__asm {
@@ -405,10 +369,42 @@ float tangente_intel(float x) {
 	return result;
 }
 float tangente_metodo(float x) {
-	__asm {
-
+	x = fmod(x, 360.0f); //Convierto a angulo de -360° a +360°
+	if (x < 0) x += 360.f; //Convierto a angulos positivos
+	if (x == 90.f || x == 270.0f) {
+		cout << "ALERT: Not A Number" << endl;
+		return log(-1.f);
 	}
-	return 0;
+	float sin = 0.f;
+	float cos = 0.f;
+	float cero = 0.f;
+	__asm {
+		MOV eax, DWORD PTR[x]
+		PUSH eax
+		CALL seno_metodo
+		POP ebx
+		FSTP DWORD PTR[sin]
+		MOV eax, DWORD PTR[x]
+		PUSH eax
+		CALL coseno_metodo
+		POP ebx
+		FSTP DWORD PTR[cos]
+		FLD DWORD PTR[cero]
+		FLD DWORD PTR[cos]
+		FCOMIP ST(0), ST(1);
+		FSTP ST(0)
+		JE tan_infinity
+		FLD DWORD PTR[sin] 
+		FLD DWORD PTR[cos]
+		FDIV
+		FSTP DWORD PTR[cero]
+		JMP fin
+	}
+	tan_infinity:
+	cout << "ALERT: Infinity" << endl;
+		return tanf(x);
+	fin:
+	return cero;
 }
 /*
 logaritmo base 10 con la implemtacion brindada por el 
@@ -524,15 +520,15 @@ float series_ln(float x) {
 		FLD DWORD PTR[dos]
 		FMUL
 		FSTP DWORD PTR[result]
-		JMP ret
+		JMP retu
 	}
 	lessinfinity:
 		cout << "ALERT: -infinity" << endl;
-		return log(0);
+		return log(0.f);
 	nan_ln:
 		cout << "ALERT: Not a Number" << endl;
-		return log(-1);
-	ret:
+		return log(-1.f);
+	retu:
 	return result;
 }
 float series_e(float x) {
@@ -548,7 +544,7 @@ float series_e(float x) {
 		FLD DWORD PTR[n] //Cargo n
 		FLD DWORD PTR[uno] //Cargo 1
 		FADD //n+1
-		CALL paso
+		//CALL paso
 		FSTP DWORD PTR[n] //n=n+1
 		MOV eax, DWORD PTR[n] //El
 		PUSH eax //Exponente
@@ -571,6 +567,7 @@ float series_e(float x) {
 		FLD DWORD PTR[tmpres] //cargo tmpres
 		FLD DWORD PTR[cero] //cargo cero
 		FCOMIP ST(0), ST(1); //comparo tmpres y cero
+		FSTP ST(0) //limpio y
 		JE fin //si es 0, fin
 		FLD DWORD PTR[result]
 		FLD DWORD PTR[tmpres]
@@ -606,7 +603,7 @@ float log2_metodo(float x) {
 	float two = 2.0f;
 	float result = 0.0f;
 	__asm {
-		MOV eax, DWORD PTR[two] //cargo 10
+			MOV eax, DWORD PTR[two] //cargo 10
 			PUSH eax // lo mando de parametro
 			CALL series_ln //hago ln(10)
 			POP ebx //quito el parametro
@@ -625,8 +622,10 @@ float log2_metodo(float x) {
 }
 int main()
 {
+	cout << "|    Calculadora en : DEG     |" << endl;
 menu:int op;
 	float a, b;
+	float alt;
 	cout << "|   CALCULADORA CIENTIFICA    |" << endl;
 	cout << "|-----------------------------|" << endl;
 	cout << "| OPERACIONES SOPORTADAS:     |" << endl;
@@ -645,9 +644,10 @@ menu:int op;
 	cout << "|>LOG BASE 10             12  |" << endl;
 	cout << "|>e^x                     13  |" << endl;
 	cout << "|>ln(x)                   14  |" << endl;
+	cout << "|>SALIR                   15  |" << endl;
 	cout << "|DIGITE OPCION:               |" << endl;
 	cout << "|_____________________________|" << endl;
-	cin >> op;
+	cout << "> "; cin >> op;
 
 	switch (op){
 		case 1:
@@ -776,17 +776,15 @@ menu:int op;
 			float l; cin >> l;
 			cout << "| Respuesta = " << series_ln(l) << endl;
 			goto seguir;
-		case 20:
-			float x;
-			cout << "ln() of: "; cin >> x; cout << endl << series_ln(x) << endl;
-			goto seguir;
+		case 15:
+			return 0;
 		default:
 			break;
 	}
 
 seguir:op = 0;
 	cout << "|-----------------------------|" << endl;
-	cout << "|Desea continuar si(1) - No(0)|" << endl;
+	cout << "|Desea continuar Si(1) - No(0)|" << endl;
 	cin >> op;
 	if (op == 1){
 		goto menu;
