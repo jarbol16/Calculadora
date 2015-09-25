@@ -8,7 +8,9 @@
 #include "iostream"
 
 using namespace std;
-
+void paso() {
+	cout << "PASO" << endl;
+}
 float sumar(float a, float b){//luego hay que ponerlo como flotante
 	float result = 0.00;
 	__asm {
@@ -218,20 +220,170 @@ int factEntero(int X) {
 terminar:
 	return result;
 }
-float seno(float x) {
+
+float gradosARadianes(float n) {
+	float pi = 3.14159265359;
+	float a = 180.0;
+	float mul;
+	float result;
+	__asm {
+			FLD DWORD PTR[n]
+			FLD DWORD PTR[pi]
+			FMUL
+			FSTP DWORD PTR[mul]
+			FLD DWORD PTR[mul]
+			FLD DWORD PTR[a]
+			FDIV
+			FSTP DWORD PTR[result]
+	}
+	return result;
+}
+
+float seno_intel(float x) {
+	x = gradosARadianes(x);
+	float result = 0.0;
+	__asm {
+		FLD DWORD PTR[x]
+			FSIN
+			FSTP DWORD PTR[result];
+	}
+	return result;
+}
+
+float seno_metodo(float x) {
+	float n = gradosARadianes(x);
+	float dos = 2.f;
+	int niter = 10;
+	float exp = 3.f;
+	float menosuno = -1.f;
+	float res = 0.0;
+	float xn = 0.f;
+	float iterador = 0.f;
+	float nf;
+	float p;
+	float signo = menosuno;
+
 	__asm {
 
+	ciclo:
+			INC iterador
+			MOV eax, DWORD PTR[exp] //El
+			PUSH eax //Exponente
+			MOV eax, DWORD PTR[n] //La
+			PUSH eax //Base
+			CALL powf //Llamo la funcion
+			POP ebx
+			POP ebx
+			FSTP DWORD PTR[xn] //Guardo el x^n
+			MOV eax, DWORD PTR[exp]
+			PUSH eax // el exp
+			CALL factorial //hago exp!
+			POP ebx
+			FSTP DWORD PTR[nf] // guardo el n!
+			FLD DWORD PTR[xn]
+			FLD DWORD PTR[nf]
+			FDIV
+			FSTP DWORD PTR[p]
+
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[p]
+			FMUL
+			FSTP DWORD PTR[p] // signo de la fracción
+			FLD dword ptr[res] 
+			FLD dword ptr[p]
+			FADD 
+			FSTP dword ptr[res]// resultado parcial
+			FLD dword ptr[exp]
+			FLD dword ptr[dos]
+			FADD
+			FSTP dword ptr[exp]
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[menosuno]
+			FMUL
+			FSTP DWORD PTR[signo] // signo de la fracción
+			MOV EAX, iterador
+			CMP EAX, niter
+			JE fin
+			JMP ciclo
+
+		fin:
+			FLD DWORD PTR[n]
+			FLD DWORD PTR[res] 
+			FADD 
+			FSTP DWORD PTR[res]	
 	}
-	return 0.0;
+
+	return res;
 }
 
 float coseno_metodo(float x) {
+	float n = gradosARadianes(x);
+	float dos = 2.f;
+	int niter = 10;
+	float exp = 2.f;
+	float menosuno = -1.f;
+	float res = 0.0;
+	float xn = 0.f;
+	float iterador = 0.f;
+	float nf;
+	float p;
+	float signo = menosuno;
+	float uno = 1.f;
+
 	__asm {
 
+	ciclo:
+		INC iterador
+			MOV eax, DWORD PTR[exp] //El
+			PUSH eax //Exponente
+			MOV eax, DWORD PTR[n] //La
+			PUSH eax //Base
+			CALL powf //Llamo la funcion
+			POP ebx
+			POP ebx
+			FSTP DWORD PTR[xn] //Guardo el x^n
+			MOV eax, DWORD PTR[exp]
+			PUSH eax // el exp
+			CALL factorial //hago exp!
+			POP ebx
+			FSTP DWORD PTR[nf] // guardo el n!
+			FLD DWORD PTR[xn]
+			FLD DWORD PTR[nf]
+			FDIV
+			FSTP DWORD PTR[p]
+
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[p]
+			FMUL
+			FSTP DWORD PTR[p] // signo de la fracción
+			FLD dword ptr[res]
+			FLD dword ptr[p]
+			FADD
+			FSTP dword ptr[res]// resultado parcial
+			FLD dword ptr[exp]
+			FLD dword ptr[dos]
+			FADD
+			FSTP dword ptr[exp]
+			FLD DWORD PTR[signo]
+			FLD DWORD PTR[menosuno]
+			FMUL
+			FSTP DWORD PTR[signo] // signo de la fracción
+			MOV EAX, iterador
+			CMP EAX, niter
+			JE fin
+			JMP ciclo
+
+		fin :
+			FLD DWORD PTR[uno]
+			FLD DWORD PTR[res]
+			FADD
+			FSTP DWORD PTR[res]
 	}
-	return 0;
+
+	return res;
 }
 float coseno_intel(float x) {
+	x = gradosARadianes(x);
 	float result = 0.0;
 	__asm {
 		FLD DWORD PTR[x]
@@ -242,6 +394,7 @@ float coseno_intel(float x) {
 }
 
 float tangente_intel(float x) {
+	x = gradosARadianes(x);
 	float result = 0.0;
 	__asm {
 		FLD DWORD PTR[x]
@@ -272,14 +425,6 @@ float log10_intel(float x) {
 	}
 	return result;
 }
-float log10_metodo(float x) {
-	//float result;
-	__asm {
-
-	}
-	return 0.0;
-
-}
 
 float log2_intel(float x) {
 	float result;
@@ -292,51 +437,107 @@ float log2_intel(float x) {
 	}
 	return result;
 }
-float log2_metodo(float x) {
-	//float result;
-	__asm {
-
-	}
-	return 0.0;
-
-}
 
 float series_ln(float x) {
-	float result = 0;
-	float uno = 1.f;
-	float mUno = -1.f;
-	float n = 1.f;
-	/*__asm {
-	FLD DWORD PTR[uno] //s(1)
-	FLD DWORD PTR[x] //s(0)
-	FSUB st(0),st(1)
-	FSTP DWORD PTR[result]
-	FLD DWORD PTR[mUno] //Cargo el -1
-	FSTP DWORD PTR[result]
-	}*/
-	/*__asm{
-			MOV  eax, DWORD PTR[n] //Poner el primer argumentos en eax Exponente
-			PUSH eax //Almacenarlo en pila
-			MOV  eax, DWORD PTR[mUno] //Poner el segundo argumentos en eax Base
-			PUSH eax //Almacenarlo en pila
-			CALL powf //Llamo la funcion
-			POP  ebx //Saco argumento // mov DWORD PTR[result1],ebx
-			POP  ebx //Saco argumento // mov DWORD PTR[result2],ebx
-			FSTP DWORD PTR[result] //Guardo el (-1)^n
-			FLD DWORD PTR[result] //Cargo el (-1)^n
-			FLD DWORD PTR[mUno] //Cargo el -1
-			FMUL //Multiplico
-			FSTP DWORD PTR[result] //Guardo (-1)^(n+1)
-	}*/
-	cout << "Result: " << result << endl;
+	if(x>0.0f){
+		goto follow;
+	}
+	else if (x == 0.0f) {
+		goto lessinfinity;
+	}
+	else {
+		goto nan_ln;
+	}
+	/*
+		ln(x) = 2*sum from n=1 to inf of
+		((x-1)/(x+1))**(2n-1) 
+		--------------------
+			   (2n-1)
+		for x > 0
+	*/
+	follow:
+	float result = 0.0f;
+	float incremento = 1.f;
+	float n = 0.0f;
+	float top = 0.0f; //(x-1)/(x+1)
+	float tmp1 = 0.0f;
+	float tmp2 = 0.0f;
+	float uno = 1.0f;
+	float muno = -1.f;
+	float cero = 0.0f;
+	float dos = 2.f;
+	float max_iter = 11.f;
+	__asm { //(x-1)/(x+1)
+		FLD DWORD PTR[uno]
+		FLD DWORD PTR[x]
+		FADD st(0),st(1) //(x+1)
+		FSTP DWORD PTR[tmp2]
+		FLD DWORD PTR[uno]
+		FLD DWORD PTR[x]
+		FSUB st(0),st(1) //(x-1)
+		FSTP DWORD PTR[tmp1]
+		FLD DWORD PTR[tmp2] // (x+1) st(1)
+		FLD DWORD PTR[tmp1] // (x-1) st(0)
+		FDIV st(0),st(1) // (x-1)/(x+1)
+		FSTP DWORD PTR[top]
+	}
+	//cout << "Entro" << endl;
+	__asm {
+	ciclo:
+		FLD DWORD PTR[n] //n
+		FLD DWORD PTR[uno] //+
+		FADD
+		FSTP DWORD PTR[n] //n+1
+		FLD DWORD PTR[incremento] //Si el incremento es
+		FLD DWORD PTR[cero] // cero
+		FCOMIP st,st(1) //entonces
+		FSTP ST(0) //limpio y 
+		JE fin //termino
+		FLD DWORD PTR[n] //si pongo n
+		FLD DWORD PTR[dos] //lo multiplico por 2
+		FMUL
+		FSTP DWORD PTR[tmp2] //2n
+		FLD DWORD PTR[tmp2] //le resto
+		FLD DWORD PTR[muno] //uno
+		FADD
+		FSTP DWORD PTR[tmp2] 
+		MOV EAX, DWORD PTR[tmp2] //exponente
+		PUSH EAX
+		MOV EAX, DWORD PTR[top] //base
+		PUSH EAX
+		CALL powf
+		POP EBX
+		POP EBX
+		FSTP DWORD PTR[tmp1]
+		FLD DWORD PTR[tmp1]
+		FLD DWORD PTR[tmp2]
+		FDIV
+		FSTP DWORD PTR[incremento]
+		FLD DWORD PTR[result]
+		FLD DWORD PTR[incremento]
+		FADD
+		FSTP DWORD PTR[result]
+		JO fin //Si hay overflow termino antes de sumar a result
+		JMP ciclo
+		fin:
+		FLD DWORD PTR[result]
+		FLD DWORD PTR[dos]
+		FMUL
+		FSTP DWORD PTR[result]
+		JMP ret
+	}
+	lessinfinity:
+		cout << "ALERT: -infinity" << endl;
+		return log(0);
+	nan_ln:
+		cout << "ALERT: Not a Number" << endl;
+		return log(-1);
+	ret:
 	return result;
-}
-void paso() {
-	cout << "PASO" << endl;
 }
 float series_e(float x) {
 	float result = 0.f;
-	float n = 5.f; //Ver hasta cuanto puede aumentar
+	float n = -1.f;
 	float uno = 1.0f;
 	float cero = 0.0f;
 	float tmpxn = 0.f;
@@ -346,42 +547,82 @@ float series_e(float x) {
 	ciclo:
 		FLD DWORD PTR[n] //Cargo n
 		FLD DWORD PTR[uno] //Cargo 1
-		FSUB //n-1
+		FADD //n+1
 		CALL paso
-		FSTP DWORD PTR[n] //n=n-1
-			xn:
-			MOV eax, DWORD PTR[n] //El
-			PUSH eax //Exponente
-			MOV eax, DWORD PTR[x] //La
-			PUSH eax //Base
-			CALL powf //Llamo la funcion
-			POP ebx
-			POP ebx
-			FSTP DWORD PTR[tmpxn] //Guardo el x^n
-			MOV eax, DWORD PTR[n]
-			PUSH eax // el n
-			CALL factorial //hago n!
-			POP ebx
-			FSTP DWORD PTR[tmpnf] // guardo el n!
-			FLD DWORD PTR[tmpxn] //cargo x^n
-			FLD DWORD PTR[tmpnf] // cargo el n!
-			FDIV
-			FSTP DWORD PTR[tmpres]
-			FLD DWORD PTR[result]
-			FLD DWORD PTR[tmpres]
-			FADD
-			FSTP DWORD PTR[result]
-		FLD DWORD PTR[n] //cargo n
+		FSTP DWORD PTR[n] //n=n+1
+		MOV eax, DWORD PTR[n] //El
+		PUSH eax //Exponente
+		MOV eax, DWORD PTR[x] //La
+		PUSH eax //Base
+		CALL powf //Llamo la funcion
+		POP ebx
+		POP ebx
+		FSTP DWORD PTR[tmpxn] //Guardo el x^n
+		MOV eax, DWORD PTR[n]
+		PUSH eax // el n
+		CALL factorial //hago n!
+		POP ebx
+		FSTP DWORD PTR[tmpnf] // guardo el n!
+		FLD DWORD PTR[tmpxn] //cargo x^n
+		FLD DWORD PTR[tmpnf] // cargo el n!
+		FDIV
+		FSTP DWORD PTR[tmpres]
+		JO fin
+		FLD DWORD PTR[tmpres] //cargo tmpres
 		FLD DWORD PTR[cero] //cargo cero
-		FCOMIP ST(0), ST(1); //comparo n y cero
-		JE fin //si es 0, chao
+		FCOMIP ST(0), ST(1); //comparo tmpres y cero
+		JE fin //si es 0, fin
+		FLD DWORD PTR[result]
+		FLD DWORD PTR[tmpres]
+		FADD
+		FSTP DWORD PTR[result]
 		JMP ciclo // si no siga
-	fin:
-		
+	fin:	
 	}
 	return result;
 }
-
+float log10_metodo(float x) {
+	float ten = 10.0f;
+	float result = 0.0f;
+	__asm {
+		MOV eax, DWORD PTR[ten] //cargo 10
+		PUSH eax // lo mando de parametro
+		CALL series_ln //hago ln(10)
+		POP ebx //quito el parametro
+		FSTP DWORD PTR[ten] // guardo ln(10) donde estaba 10
+		MOV eax, DWORD PTR[x] //cargo x
+		PUSH eax // lo mando de parametro
+		CALL series_ln //hago ln(x)
+		POP ebx //quito el parametro
+		FSTP DWORD PTR[result] // guardo ln(x) donde estaba result
+		FLD DWORD PTR[result] //ln(x)
+		FLD DWORD PTR[ten] // ln(10)
+		FDIV //log10(x) = ln(x)/ln(10)
+		FSTP DWORD PTR[result] 
+	}
+	return result;
+}
+float log2_metodo(float x) {
+	float two = 2.0f;
+	float result = 0.0f;
+	__asm {
+		MOV eax, DWORD PTR[two] //cargo 10
+			PUSH eax // lo mando de parametro
+			CALL series_ln //hago ln(10)
+			POP ebx //quito el parametro
+			FSTP DWORD PTR[two] // guardo ln(10) donde estaba 10
+			MOV eax, DWORD PTR[x] //cargo x
+			PUSH eax // lo mando de parametro
+			CALL series_ln //hago ln(x)
+			POP ebx //quito el parametro
+			FSTP DWORD PTR[result] // guardo ln(x) donde estaba result
+			FLD DWORD PTR[result] //ln(x)
+			FLD DWORD PTR[two] // ln(10)
+			FDIV //log10(x) = ln(x)/ln(10)
+			FSTP DWORD PTR[result]
+	}
+	return result;
+}
 int main()
 {
 menu:int op;
@@ -403,6 +644,7 @@ menu:int op;
 	cout << "|>LOG BASE 2              11  |" << endl;
 	cout << "|>LOG BASE 10             12  |" << endl;
 	cout << "|>e^x                     13  |" << endl;
+	cout << "|>ln(x)                   14  |" << endl;
 	cout << "|DIGITE OPCION:               |" << endl;
 	cout << "|_____________________________|" << endl;
 	cin >> op;
@@ -449,7 +691,8 @@ menu:int op;
 			cout << "|-----------------------------|" << endl;
 			cout << "| Digite  numero:";
 			cin >> a;
-			cout << "| [FP] Respuesta = " << seno(a) << endl;
+			cout << "| [FP] Respuesta = " << seno_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << seno_metodo(a) << endl;
 			goto seguir;
 		case 6:
 			cout << "|            COSENO           |" << endl;
@@ -503,6 +746,14 @@ menu:int op;
 				cout << "| Respuesta = " << factEntero(fac) << endl;
 			}
 			goto seguir;
+		case 11:
+			cout << "|        LOG BASE 2           |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero:";
+			cin >> a;
+			cout << "| [FP] Respuesta = " << log2_intel(a) << endl;
+			cout << "| [ME] Respuesta = " << log2_metodo(a) << endl;
+			goto seguir;
 		case 12:
 			cout << "|        LOG BASE 10          |" << endl;
 			cout << "|-----------------------------|" << endl;
@@ -517,6 +768,13 @@ menu:int op;
 			cout << "| Digite  numero: ";
 			float y; cin >> y;
 			cout << "| Respuesta = " << series_e(y) << endl;
+			goto seguir;
+		case 14:
+			cout << "|            ln(x)            |" << endl;
+			cout << "|-----------------------------|" << endl;
+			cout << "| Digite  numero: ";
+			float l; cin >> l;
+			cout << "| Respuesta = " << series_ln(l) << endl;
 			goto seguir;
 		case 20:
 			float x;
