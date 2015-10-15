@@ -55,12 +55,17 @@ float division(float a, float b) {
 		FLD DWORD PTR[b]
 		FDIV
 		FSTP DWORD PTR[result]
+		JO overf
+		JC fin
 	}
+	fin:
 	printf("| Respuesta= : %.2f\n", result);
 	return result;
 divCero:
 	cout << "|<     Division por cero     >|" << endl;
 	return 0.0;
+overf:
+	cout << "|<     -----Overflow-----    >|" << endl;
 }
 
 float raiz(float x) {
@@ -123,8 +128,16 @@ terminar:
 	return result;
 }
 float exponente_flotante(float base, float exp) {
-	float result;
+	float result = 0.0f;
+	float cero = 0.0f;
 	__asm {
+		FLD DWORD PTR[cero] //cargo tmpres
+		FLD DWORD PTR[base] //cargo cero
+		FCOMIP ST(0), ST(1); //comparo tmpres y cero
+		FSTP ST(0) //limpio y
+		JL positive //si es 0, fin
+		JMP negative
+			positive:
 		FLD DWORD PTR[exp]//leo LA POTENCIA
 		FLD DWORD PTR[base]//leo la base
 		FYL2X
@@ -137,6 +150,17 @@ float exponente_flotante(float base, float exp) {
 		FADD//sumo el 1 para que quede 2^x
 		FSCALE
 		FSTP DWORD PTR[result]
+		JMP exp_fin
+		negative:
+		MOV eax, DWORD PTR[exp] //El
+		PUSH eax //Exponente
+		MOV eax, DWORD PTR[base] //La
+		PUSH eax //Base
+		CALL powf //Llamo la funcion
+		POP ebx
+		POP ebx
+		FSTP DWORD PTR[result] //Guardo el x^n
+		exp_fin:
 	}
 	return result;
 }
@@ -355,7 +379,7 @@ float tangente_intel(float x) {
 	x = fmod(x, 360.0f); //Convierto a angulo de -360° a +360°
 	if (x < 0) x += 360.f; //Convierto a angulos positivos
 	if (x == 90.f || x == 270.0f) {
-		cout << "ALERT: Not A Number" << endl;
+		cout << "| ALERT: Not A Number" << endl;
 		return log(-1.f);
 	}
 	x = gradosARadianes(x);
@@ -372,7 +396,7 @@ float tangente_metodo(float x) {
 	x = fmod(x, 360.0f); //Convierto a angulo de -360° a +360°
 	if (x < 0) x += 360.f; //Convierto a angulos positivos
 	if (x == 90.f || x == 270.0f) {
-		cout << "ALERT: Not A Number" << endl;
+		cout << "| ALERT: Not A Number" << endl;
 		return log(-1.f);
 	}
 	float sin = 0.f;
@@ -401,7 +425,7 @@ float tangente_metodo(float x) {
 		JMP fin
 	}
 	tan_infinity:
-	cout << "ALERT: Infinity" << endl;
+	cout << "| ALERT: Infinity" << endl;
 		return tanf(x);
 	fin:
 	return cero;
@@ -477,7 +501,6 @@ float series_ln(float x) {
 		FDIV st(0),st(1) // (x-1)/(x+1)
 		FSTP DWORD PTR[top]
 	}
-	//cout << "Entro" << endl;
 	__asm {
 	ciclo:
 		FLD DWORD PTR[n] //n
@@ -523,10 +546,10 @@ float series_ln(float x) {
 		JMP retu
 	}
 	lessinfinity:
-		cout << "ALERT: -infinity" << endl;
+		cout << "| ALERT: -infinity" << endl;
 		return log(0.f);
 	nan_ln:
-		cout << "ALERT: Not a Number" << endl;
+		cout << "| ALERT: Not a Number" << endl;
 		return log(-1.f);
 	retu:
 	return result;
@@ -622,7 +645,9 @@ float log2_metodo(float x) {
 }
 int main()
 {
+	cout << "|-----------------------------|" << endl;
 	cout << "|    Calculadora en : DEG     |" << endl;
+	cout << "|-----------------------------|" << endl;
 menu:int op;
 	float a, b;
 	float alt;
@@ -630,66 +655,67 @@ menu:int op;
 	cout << "|-----------------------------|" << endl;
 	cout << "| OPERACIONES SOPORTADAS:     |" << endl;
 	cout << "|_____________________________|" << endl;
-	cout << "|>SUMA                     1  |" << endl;
-	cout << "|>RESTA                    2  |" << endl;
-	cout << "|>MULTIPLICACION           3  |" << endl;
-	cout << "|>DIVISION                 4  |" << endl;
-	cout << "|>SENO                     5  |" << endl;
-	cout << "|>COSENO                   6  |" << endl;
-	cout << "|>TANGENTE                 7  |" << endl;
-	cout << "|>RAIZ CUADRADA            8  |" << endl;
-	cout << "|>EXPONENTE                9  |" << endl;
-	cout << "|>FACTORIAL               10  |" << endl;
-	cout << "|>LOG BASE 2              11  |" << endl;
-	cout << "|>LOG BASE 10             12  |" << endl;
-	cout << "|>e^x                     13  |" << endl;
-	cout << "|>ln(x)                   14  |" << endl;
-	cout << "|>SALIR                   15  |" << endl;
-	cout << "|DIGITE OPCION:               |" << endl;
+	cout << "| > SUMA                   1  |" << endl;
+	cout << "| > RESTA                  2  |" << endl;
+	cout << "| > MULTIPLICACION         3  |" << endl;
+	cout << "| > DIVISION               4  |" << endl;
+	cout << "| > SENO                   5  |" << endl;
+	cout << "| > COSENO                 6  |" << endl;
+	cout << "| > TANGENTE               7  |" << endl;
+	cout << "| > RAIZ CUADRADA          8  |" << endl;
+	cout << "| > EXPONENTE              9  |" << endl;
+	cout << "| > FACTORIAL             10  |" << endl;
+	cout << "| > LOG BASE 2            11  |" << endl;
+	cout << "| > LOG BASE 10           12  |" << endl;
+	cout << "| > e^x                   13  |" << endl;
+	cout << "| > ln(x)                 14  |" << endl;
+	cout << "| > SALIR                  0  |" << endl;
 	cout << "|_____________________________|" << endl;
-	cout << "> "; cin >> op;
-
+	cout << "| DIGITE OPCION:              |" << endl;
+	cout << "|_____________________________|" << endl;
+	cout << "| > "; cin >> op;
+	op = op % 20;
 	switch (op){
 		case 1:
 			cout << "|             SUMA            |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite primer numero: ";
 			cin >> a;
-			cout << "| Digite segundo numero:";
+			cout << "| Digite segundo numero: ";
 			cin >> b;
 			cout << "| Respuesta = " << sumar(a, b)<<endl;
 			goto seguir;
 		case 2:
 			cout << "|            RESTA            |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite primer numero: ";
 			cin >> a;
-			cout << "| Digite segundo numero:";
+			cout << "| Digite segundo numero: ";
 			cin >> b;
 			cout << "| Respuesta = " << resta(a, b) << endl;
 			goto seguir;
 		case 3:
 			cout << "|       MULTIPLICACION        |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite primer numero: ";
 			cin >> a;
-			cout << "| Digite segundo numero:";
+			cout << "| Digite segundo numero: ";
 			cin >> b;
 			cout << "| Respuesta = " << multiplicacion(b, a) << endl;
 			goto seguir;
 		case 4:
 			cout << "|           DIVISION          |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite primer numero:";
+			cout << "| Digite primer numero: ";
 			cin >> a;
-			cout << "| Digite segundo numero:";
+			cout << "| Digite segundo numero: ";
 			cin >> b;
 			division(a,b);
 			goto seguir;
 		case 5:
 			cout << "|              SENO           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
 			cout << "| [FP] Respuesta = " << seno_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << seno_metodo(a) << endl;
@@ -697,7 +723,7 @@ menu:int op;
 		case 6:
 			cout << "|            COSENO           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
 			cout << "| [FP] Respuesta = " << coseno_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << coseno_metodo(a) << endl;
@@ -705,7 +731,7 @@ menu:int op;
 		case 7:
 			cout << "|          TANGENTE           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
 			cout << "| [FP] Respuesta = " << tangente_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << tangente_metodo(a) << endl;
@@ -713,43 +739,56 @@ menu:int op;
 		case 8:
 			cout << "|       RAIZ CUADRADA         |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
-			b = raiz(a);
-			if (b < 0) {
-				cout << "|<No soporta imaginarios>|" << endl;
+			if (a < 0) {
+			cout << "|         <ADVERTENCIA>       |" << endl;
+			cout << "|   <No soporta imaginarios>  |" << endl;
+			a *= -1.f;
+			cout << "| [FP] Respuesta = " << raiz(a) << "i" << endl;
+			cout << "| [ME] Respuesta = " << raiz_metodo(a)<< "i"<< endl;
 			}else { 
-				cout << "[FP] Respuesta =" << b  << endl;
-				cout << "[ME] Respuesta =" << raiz_metodo(a) << endl;
+				cout << "| [FP] Respuesta = " << raiz(a) << endl;
+				cout << "| [ME] Respuesta = " << raiz_metodo(a) << endl;
 			}
 			goto seguir;
 
 		case 9:
 			cout << "|          EXPONENTE          |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite coeficiente:";
+			cout << "| Digite coeficiente: ";
 			cin >> a;
-			cout << "| Digite exponente:";
+			cout << "| Digite exponente: ";
 			cin >> b;
-			cout << "| Respuesta =" << exponente_flotante(a, b) << endl;
+			cout << "| Respuesta = " << exponente_flotante(a, b) << endl;
 			goto seguir;
 		case 10:
 			cout << "|         FACTORIAL           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			int fac;
-			cout << "| Digite  numero:" << endl;
+			float fac;
+			cout << "| Digite  numero: ";
 			cin >> fac;
 			if (fac < 0) {
-				fac = fac*-1;
-				cout << "| Respuesta = -" << factEntero(fac) << endl;
+			cout << "| ERROR: factoial no definido |"<< endl;
+			cout << "|   en los numeros negativos  |" << endl;
 			}else {
-				cout << "| Respuesta = " << factEntero(fac) << endl;
+				float decimal = fmod(fac, 1.f);
+				if (decimal == 0.0) {
+					cout << "| Respuesta = " << factEntero((int)fac) << endl;
+				}
+				else {
+			cout << "|ALERTA: Factorial no definido|" << endl;
+			cout << "| se aproximo al entero menor |" << endl;
+					cout << "| Respuesta = "<<
+						factEntero((int)(fac-decimal)) << endl;
+				}
+				cout << "| Respuesta = " << factEntero((int)fac) << endl;
 			}
 			goto seguir;
 		case 11:
 			cout << "|        LOG BASE 2           |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
 			cout << "| [FP] Respuesta = " << log2_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << log2_metodo(a) << endl;
@@ -757,7 +796,7 @@ menu:int op;
 		case 12:
 			cout << "|        LOG BASE 10          |" << endl;
 			cout << "|-----------------------------|" << endl;
-			cout << "| Digite  numero:";
+			cout << "| Digite  numero: ";
 			cin >> a;
 			cout << "| [FP] Respuesta = " << log10_intel(a) << endl;
 			cout << "| [ME] Respuesta = " << log10_metodo(a) << endl;
@@ -776,19 +815,16 @@ menu:int op;
 			float l; cin >> l;
 			cout << "| Respuesta = " << series_ln(l) << endl;
 			goto seguir;
-		case 15:
+		case 0:
 			return 0;
 		default:
+			goto seguir;
 			break;
 	}
 
-seguir:op = 0;
-	cout << "|-----------------------------|" << endl;
-	cout << "|Desea continuar Si(1) - No(0)|" << endl;
-	cin >> op;
-	if (op == 1){
-		goto menu;
-	}
+seguir:
+	cout << endl << endl << endl;
+	goto menu;
 	return 0;
 }
 
